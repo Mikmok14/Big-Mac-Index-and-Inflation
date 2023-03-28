@@ -1,0 +1,278 @@
+---
+title: "INF412 Final Assignment"
+author: "Marco Chau, Julia Wong, Cindy Ly"
+date: '2023-03-27'
+output: pdf_document
+abstract: "Insert abstract paragraph here."
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(ggplot2)
+```
+
+### Load in Big Mac and inflation data from directory
+```{r}
+canada_data <- read.csv("data\\canada_big_mac_data.csv")
+britain_data <- read.csv("data\\britain_big_mac_data.csv")
+japan_data <- read.csv("data\\japan_big_mac_data.csv")
+combined_data <- read.csv("data\\combined_big_mac_data.csv")
+```
+
+### Convert date columns from character class to date class
+```{r}
+canada_data$date <- as.Date(canada_data$date)
+britain_data$date <- as.Date(britain_data$date)
+japan_data$date <- as.Date(japan_data$date)
+combined_data$date <- as.Date(combined_data$date)
+```
+
+\newpage
+# Introduction
+Place introduction section here
+
+# Data
+
+```{r canada_price_fig}
+# Create line graph to show price points for Canada
+ggplot(canada_data) +
+  aes(x = date, y = local_price) +
+  geom_point(colour = "black") +
+  geom_line(colour = "orange") +
+  theme_minimal() +
+  ggtitle("Price of Big Macs in Canada") +
+  labs(x = "Date", 
+       y = "Price in CAD") 
+
+# Create line graph to show Big Mac Index for Canada
+ggplot(canada_data) +
+  aes(x = date, y = big_mac_index) +
+  geom_point(colour = "black") +
+  geom_line(colour = "orange") +
+  theme_minimal() +
+  ggtitle("Big Mac Index in Canada") +
+  labs(x = "Date", 
+       y = "Index") 
+
+# Create line graph for inflation rate in Canada
+ggplot(canada_data) +
+  aes(x = date, y = inflation_rate) +
+  geom_point(colour = "black") +
+  geom_line(colour = "orange") +
+  theme_minimal() +
+  ggtitle("Inflation Rate in Canada") +
+  labs(x = "Date", 
+       y = "Inflation (%)") 
+```
+
+```{r britain_price_fig}
+# Create line graph to show data points for Britain
+ggplot(britain_data) +
+  aes(x = date, y = local_price) +
+  geom_point(colour = "black") +
+  geom_line(colour = "blue") +
+  theme_minimal() +
+  ggtitle("Price of Big Macs in Britain") +
+  labs(x = "Date", 
+       y = "Price in British Pounds")
+
+# Create line graph to show Big Mac Index for Britain
+ggplot(britain_data) +
+  aes(x = date, y = big_mac_index) +
+  geom_point(colour = "black") +
+  geom_line(colour = "blue") +
+  theme_minimal() +
+  ggtitle("Big Mac Index in Britain") +
+  labs(x = "Date", 
+       y = "Index") 
+
+# Create line graph for inflation rate in Britain
+ggplot(britain_data) +
+  aes(x = date, y = inflation_rate) +
+  geom_point(colour = "black") +
+  geom_line(colour = "blue") +
+  theme_minimal() +
+  ggtitle("Inflation Rate in Britain") +
+  labs(x = "Date", 
+       y = "Inflation (%)") 
+```
+
+```{r japan_price_fig}
+# Create line graph to show data points for Japan
+ggplot(japan_data) +
+  aes(x = date, y = local_price) +
+  geom_point(colour = "black") +
+  geom_line(colour = "red") +
+  theme_minimal() +
+  ggtitle("Price of Big Macs in Japan") +
+  labs(x = "Date", 
+       y = "Price in Yen")
+
+# Create line graph to show Big Mac Index for Japan
+ggplot(canada_data) +
+  aes(x = date, y = big_mac_index) +
+  geom_point(colour = "black") +
+  geom_line(colour = "red") +
+  theme_minimal() +
+  ggtitle("Big Mac Index in Japan") +
+  labs(x = "Date", 
+       y = "Index") 
+
+# Create line graph for inflation rate in Japan
+ggplot(canada_data) +
+  aes(x = date, y = inflation_rate) +
+  geom_point(colour = "black") +
+  geom_line(colour = "red") +
+  theme_minimal() +
+  ggtitle("Inflation Rate in Japan") +
+  labs(x = "Date", 
+       y = "Inflation (%)") 
+```
+
+## Summary of variables
+
+## Distributions
+```{r}
+# Distribution of independent variable: big_mac_price
+ggplot(combined_data, aes(x=dollar_price)) +
+    geom_histogram(binwidth=0.5, colour="black", fill="white") +
+  labs(x = "Price of Big Macs in USD") +
+  ggtitle("Distribution of Big Mac Prices")
+
+# Density curve
+ggplot(combined_data, aes(x=dollar_price)) + 
+  geom_density() + 
+  scale_y_continuous(labels = scales::comma) +
+  labs (x = "Price of Big Macs in USD") +
+  ggtitle("Density Curve of Big Mac Prices")
+```
+
+
+## Scatterplots
+```{r}
+# Scatter plot of Big Mac Index and Inflation in Canada
+ggplot(canada_data) +
+  aes(x = inflation_rate, y = big_mac_index) +
+  geom_point(colour = "orange") +
+  theme_minimal() +
+  labs(x = "Inflation rate (%)", y = "Big Mac Index") +
+  ggtitle("Scatter Plot of Canadian Big Mac Index and Inflation")
+```
+
+```{r}
+# Scatter plot of Big Mac Index and Inflation in Britain
+ggplot(britain_data) +
+  aes(x = inflation_rate, y = big_mac_index) +
+  geom_point(colour = "blue") +
+  theme_minimal() +
+  labs(x = "Inflation rate (%)", y = "Big Mac Index") +
+  ggtitle("Scatter plot of British Big Mac Index and Inflation")
+```
+
+```{r}
+# Scatter plot of Big Mac Index and Inflation in Japan
+ggplot(japan_data) +
+  aes(x = inflation_rate, y = big_mac_index) +
+  geom_point(colour = "red") +
+  theme_minimal() +
+  labs(x = "Inflation rate (%)", y = "Big Mac Index") +
+  ggtitle("Scatter plot of Japanese Big Mac Index and Inflation")
+```
+
+```{r}
+# Scatter plot of Big Mac Index and Inflation in all three countries combined
+ggplot(combined_data) +
+  aes(x = inflation_rate, y = big_mac_index) +
+  geom_point(colour = "black") +
+  theme_minimal() +
+  labs(x = "Inflation rate (%)", y = "Big Mac Index") +
+  ggtitle("Scatter plot of Combined Big Mac Index and Inflation")
+```
+
+#Methodology
+
+## Methods used
+
+## Assumptions
+
+# Results
+## Pearson's R
+```{r}
+# Calculate Pearson's r for Canadian Big Mac Index and Inflation Rate
+
+cor(canada_data[-1,]$big_mac_index, canada_data[-1,]$inflation_rate)
+```
+
+```{r}
+# Calculate Pearson's r for British Big Mac Index and Inflation Rate
+britain_data
+cor(britain_data[-1,]$big_mac_index, britain_data[-1,]$inflation_rate)
+```
+
+```{r}
+# Calculate Pearson's r for Japanese Big Mac Index and Inflation Rate
+japan_data
+cor(japan_data[-1,]$big_mac_index, japan_data[-1,]$inflation_rate)
+```
+
+```{r}
+# Calculate Pearson's r for Combined Big Mac Index and Inflation Rate
+combined_data
+cor(combined_data[-c(1,24,47),]$big_mac_index, combined_data[-c(1,24,47),]$inflation_rate)
+```
+
+```{r}
+#Conduct simple linear regression for Canada
+# The variable before the ~ is always the dependent variable (outcome)
+# The variables after the ~ are the independent variables
+# Store regression results
+canada_lin_reg <- lm(inflation_rate ~ big_mac_index, data = canada_data)
+
+# Display the stored results
+summary(canada_lin_reg)
+```
+
+```{r}
+#Conduct simple linear regression for Britain
+# The variable before the ~ is always the dependent variable (outcome)
+# The variables after the ~ are the independent variables
+# Store regression results
+britain_lin_reg <- lm(inflation_rate ~ big_mac_index, data = britain_data)
+
+# Display the stored results
+summary(britain_lin_reg)
+```
+
+```{r}
+#Conduct simple linear regression for Japan
+# The variable before the ~ is always the dependent variable (outcome)
+# The variables after the ~ are the independent variables
+# Store regression results
+japan_lin_reg <- lm(inflation_rate ~ big_mac_index, data = japan_data)
+
+# Display the stored results
+summary(japan_lin_reg)
+```
+
+```{r}
+#Conduct simple linear regression for all countries combined
+# The variable before the ~ is always the dependent variable (outcome)
+# The variables after the ~ are the independent variables
+# Store regression results
+combined_lin_reg <- lm(inflation_rate ~ big_mac_index, data = combined_data)
+
+# Display the stored results
+summary(combined_lin_reg)
+```
+
+# Discussion
+
+### Pearson's r
+
+
+### Simple Linear Regression
+
+
