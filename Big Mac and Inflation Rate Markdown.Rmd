@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(tidyverse)
 library(readr)
 library(ggplot2)
+library(knitr)
+library(kableExtra)
 ```
 
 
@@ -36,7 +38,7 @@ combined_data$date <- as.Date(combined_data$date)
 \newpage
 # Introduction
 
-The Big Mac Index (BMI) was introduced by The Economist in 1986 as an informal means of measuring purchasing power parity (PPP) between currencies. Mathematically, the BMI is the price ratio of Big Macs between two countries. The index provided a more tangible method of determining the difference between the real purchasing power between two countries that exchange rate alone may not reflect. Although the BMI is an informal measurement, its application is rooted in PPP theory which states that the exchange rate between two currencies is proportional to the ratio of price levels in their respective countries. The use of the Big Mac as a tool for economic analysis was subsequently coined the term 'Burgernomics'. Discrepancies between the BMI and the exchange rate of two countries suggests that one currency is overvalued (or undervalued) compared to the other. Since its conception in 1986, the BMI has been written about and evaluated extensively by economists, academics, and journalists for its strengths and limitations as a measure for real exchange rates between two currencies.^[@Clements:2012] Since the evaluation of the BMI as a measure of PPP has taken the spotlight, there is a limited amount of literature that discusses the use of Burgernomics as a predictor for inflation rate within a country. The inflation rate measures the price changes in a predetermined basket of goods in a given economy and is meant to reflect changes in consumer purchasing power from year to year. This paper extends the use of the BMI as a validator of exchange rates between two currencies to a validator of reported inflation rates of a currency between two periods in time. 
+The Big Mac Index (BMI) was introduced by *The Economist* in 1986 as an informal means of measuring purchasing power parity (PPP) between currencies. Mathematically, the BMI is the price ratio of Big Macs between two countries. The index provided a more tangible method of determining the difference between the real purchasing power between two countries that exchange rate alone may not reflect. Although the BMI is an informal measurement, its application is rooted in PPP theory which states that the exchange rate between two currencies is proportional to the ratio of price levels in their respective countries. The use of the Big Mac as a tool for economic analysis was subsequently coined the term 'Burgernomics'. Discrepancies between the BMI and the exchange rate of two countries suggests that one currency is overvalued (or undervalued) compared to the other. Since its conception in 1986, the BMI has been written about and evaluated extensively by economists, academics, and journalists for its strengths and limitations as a measure for real exchange rates between two currencies.^[@Clements:2012] Since the evaluation of the BMI as a measure of PPP has taken the spotlight, there is a limited amount of literature that discusses the use of Burgernomics as a predictor for inflation rate within a country. The inflation rate measures the price changes in a predetermined basket of goods in a given economy and is meant to reflect changes in consumer purchasing power from year to year. This paper extends the use of the BMI as a validator of exchange rates between two currencies to a validator of reported inflation rates of a currency between two periods in time. 
 
 |   In this paper we examine the differences between the inflation rate and the changes in the price of Big Macs in three countries: Canada, Japan, and the United Kingdom between 2000 - 2022. By examining differences between the inflation rate of Big Macs (which will be the Big Mac Index in the context of this paper) and the reported inflation rates of each country, we hope to determine whether the BMI can be an accurate predictor of the inflation rate, and whether reported inflation rates reflect the real changes in purchasing power from one year to the next within a country's borders. To evaluate our findings, we propose the following hypotheses:
 
@@ -49,26 +51,15 @@ The Big Mac Index (BMI) was introduced by The Economist in 1986 as an informal m
 ## Sources
 The price of Big Macs in local currencies is sourced from data provided by the *The Economist*^[@Economist:2023] and the exchange rate used to calculate the price of Big Macs in U.S. Dollars (USD) is provided by *Reuters*.^[@Reuters:2022] The CSV file that combines this data was downloaded from a GitHub repository.^[@Github:2022] We also added to the dataset by calculating the BMI, the price of Big Macs in USD, and the inflation rate in a given year. The Big Mac Index was calculated by finding the percentage change difference of prices in the local currency from one year to the next.  USD prices of Big Macs which was calculated by dividing the price of Big Macs in the local currency by the reported exchange rates during the given year. The inflation rate of Canada was sourced from the Bank of Canada's website.^[@Boc:2023] The inflation rate of the United Kingdom was sourced from the Office for National Statistics^[@National:2023] and the inflation rate of Japan was sourced from macrotrends.^[@macrotrends:2023]
 
-Summary of Canadian data:
+## Overview of Data
+### Summary of Canadian data
 ```{r}
 summary(canada_data)
 ```
-
-Summary of British data:
+Top 10 rows of Canadian data
 ```{r}
-summary(britain_data)
+kbl(head(select(canada_data, local_price, big_mac_index, inflation_rate, date)), booktabs = T, linesep = "")
 ```
-
-Summary of Japanese data:
-```{r}
-summary(japan_data)
-```
-
-summary of combined data:
-```{r}
-summary(combined_data)
-```
-
 
 ```{r canada_price_fig}
 # Create line graph to show price points for Canada
@@ -100,6 +91,11 @@ ggplot(canada_data) +
   ggtitle("Inflation Rate in Canada") +
   labs(x = "Date", 
        y = "Inflation (%)") 
+```
+
+### Summary of British data
+```{r}
+summary(britain_data)
 ```
 
 ```{r britain_price_fig}
@@ -134,6 +130,21 @@ ggplot(britain_data) +
        y = "Inflation (%)") 
 ```
 
+Top 10 rows of British data
+```{r}
+kbl(head(select(britain_data, local_price, big_mac_index, inflation_rate, date)), booktabs = T, linesep = "")
+```
+
+### Summary of Japanese data
+```{r}
+summary(japan_data)
+```
+
+Top 10 rows of Japanese data
+```{r}
+kbl(head(select(japan_data, local_price, big_mac_index, inflation_rate, date)), booktabs = T, linesep = "")
+```
+
 ```{r japan_price_fig}
 # Create line graph to show data points for Japan
 ggplot(japan_data) +
@@ -166,7 +177,10 @@ ggplot(canada_data) +
        y = "Inflation (%)") 
 ```
 
-## Summary of variables
+### Summary of Combined data:
+```{r}
+summary(combined_data)
+```
 
 ## Distributions
 ```{r}
@@ -226,30 +240,25 @@ ggplot(combined_data) +
   ggtitle("Scatter plot of Combined Big Mac Index and Inflation")
 ```
 
-
 # Results
 ## Pearson's R
 ```{r}
 # Calculate Pearson's r for Canadian Big Mac Index and Inflation Rate
-
 cor(canada_data[-1,]$big_mac_index, canada_data[-1,]$inflation_rate)
 ```
 
 ```{r}
 # Calculate Pearson's r for British Big Mac Index and Inflation Rate
-britain_data
 cor(britain_data[-1,]$big_mac_index, britain_data[-1,]$inflation_rate)
 ```
 
 ```{r}
 # Calculate Pearson's r for Japanese Big Mac Index and Inflation Rate
-japan_data
 cor(japan_data[-1,]$big_mac_index, japan_data[-1,]$inflation_rate)
 ```
 
 ```{r}
 # Calculate Pearson's r for Combined Big Mac Index and Inflation Rate
-combined_data
 cor(combined_data[-c(1,24,47),]$big_mac_index, combined_data[-c(1,24,47),]$inflation_rate)
 ```
 
@@ -297,11 +306,12 @@ combined_lin_reg <- lm(inflation_rate ~ big_mac_index, data = combined_data)
 summary(combined_lin_reg)
 ```
 
+## Canada
+
+## United Kingdom
+
+## Japan
+
 # Discussion
-
-### Pearson's r
-
-
-### Simple Linear Regression
 
 
