@@ -6,7 +6,7 @@ output:
   bookdown::pdf_document2:
     toc: true
     number_sections: true
-abstract: "Insert abstract paragraph here."
+abstract: "The Big Mac index is used traditionally in economic studies as a metric for determining whether the exchange rate between two countries is reflective of their real purchasing power. The aim of this paper is to evaluate the Big Mac Index as a predictor of the inflation rate within a currency's economy. The Big Mac prices and inflation rate of Canada, the United Kingdom, and Japan between 2000 and 2022 are analyzed using Pearson's R and a linear regression model. From this analysis we conclude that despite a weak to moderately strong correlation between the Big Mac Index and inflation in a given year, the rise of Big Mac prices is not a good predictor of inflation within a single, isolated economy."
 bibliography: references.bib
 ---
 ```{r setup, include=FALSE}
@@ -18,8 +18,6 @@ library(knitr)
 library(kableExtra)
 ```
 
-
-### Load in Big Mac and inflation data from directory
 ```{r}
 canada_data <- read.csv("data\\canada_big_mac_data.csv")
 britain_data <- read.csv("data\\britain_big_mac_data.csv")
@@ -27,13 +25,13 @@ japan_data <- read.csv("data\\japan_big_mac_data.csv")
 combined_data <- read.csv("data\\combined_big_mac_data.csv")
 ```
 
-### Convert date columns from character class to date class
 ```{r}
 canada_data$date <- as.Date(canada_data$date)
 britain_data$date <- as.Date(britain_data$date)
 japan_data$date <- as.Date(japan_data$date)
 combined_data$date <- as.Date(combined_data$date)
 ```
+
 
 \newpage
 # Introduction
@@ -50,6 +48,14 @@ The Big Mac Index (BMI) was introduced by *The Economist* in 1986 as an informal
 # Data
 ## Sources
 The price of Big Macs in local currencies is sourced from data provided by the *The Economist*^[@Economist:2023] and the exchange rate used to calculate the price of Big Macs in U.S. Dollars (USD) is provided by *Reuters*.^[@Reuters:2022] The CSV file that combines this data was downloaded from a GitHub repository.^[@Github:2022] We also added to the dataset by calculating the BMI, the price of Big Macs in USD, and the inflation rate in a given year. The Big Mac Index was calculated by finding the percentage change difference of prices in the local currency from one year to the next.  USD prices of Big Macs which was calculated by dividing the price of Big Macs in the local currency by the reported exchange rates during the given year. The inflation rate of Canada was sourced from the Bank of Canada's website.^[@Boc:2023] The inflation rate of the United Kingdom was sourced from the Office for National Statistics^[@National:2023] and the inflation rate of Japan was sourced from macrotrends.^[@macrotrends:2023]
+
+## Limitations
+A limitation of our dataset is the small subset of countries used. Our analysis is only focused around three countries: Canada, the United Kingdom, and Japan. This leads to the possibility of bias in our findings and limits the validity of our results in the broader context, as they may not apply to countries outside of this sample set. Future studies could utilize datasets with a wider range of countries to more accurately represent global economic conditions.
+
+|   Another limitation of our dataset is the possibility of human error in calculations. Variables in our dataset such as the Big Mac Index (BMI), the price of Big Macs in USD, and the inflation rate in a given year are calculated by ourselves. A single error in our calculations significantly impacts the results of our study and compromises the integrity of our analysis. Although we cross checked our calculations to ensure accuracy, human error cannot be entirely eliminated. Thus, our study’s findings must be interpreted with caution.  
+
+## Strengths
+A strength of our dataset is that the data used are derived from credible sources. We sourced each respective country’s inflation rates from reputable sources such as the Bank of Canada, Macrotrends, and the Office of National Statistics, which are widely used within academia and government organizations. The Economist and Thomson Reuters, where we sourced the price of Big Macs and exchange rates, are also well-known sources for economic and financial analysis. By using credible sources, we minimized the risk of errors and inaccuracies in our analysis. 
 
 ## Overview of Data
 ### Summary of Canadian data
@@ -98,6 +104,11 @@ ggplot(canada_data) +
 summary(britain_data)
 ```
 
+Top 10 rows of British data
+```{r}
+kbl(head(select(britain_data, local_price, big_mac_index, inflation_rate, date)), booktabs = T, linesep = "")
+```
+
 ```{r britain_price_fig}
 # Create line graph to show data points for Britain
 ggplot(britain_data) +
@@ -128,11 +139,6 @@ ggplot(britain_data) +
   ggtitle("Inflation Rate in Britain") +
   labs(x = "Date", 
        y = "Inflation (%)") 
-```
-
-Top 10 rows of British data
-```{r}
-kbl(head(select(britain_data, local_price, big_mac_index, inflation_rate, date)), booktabs = T, linesep = "")
 ```
 
 ### Summary of Japanese data
@@ -181,6 +187,7 @@ ggplot(canada_data) +
 ```{r}
 summary(combined_data)
 ```
+\vspace{-100pt}
 
 ## Distributions
 ```{r}
@@ -197,7 +204,6 @@ ggplot(combined_data, aes(x=dollar_price)) +
   labs (x = "Price of Big Macs in USD") +
   ggtitle("Density Curve of Big Mac Prices")
 ```
-
 
 ## Scatterplots
 ```{r}
@@ -240,28 +246,48 @@ ggplot(combined_data) +
   ggtitle("Scatter plot of Combined Big Mac Index and Inflation")
 ```
 
+# Methodology
+To conduct this analysis, the Pearson's R between the BMI and the inflation rate will be calculated for Canada, the United Kingdom, and Japan separately and combined. Pearson's R is used to measure whether there is a linear correlation between the BMI and inflation rate and ranges from -1 to +1. A Pearson's R of +1 suggests that the independent and dependent variables have a perfectly positive correlation. A Pearson's R of 0 suggests that there is no correlation between the independent and dependent variables and a Pearson's R of -1 suggests that there is a perfectly negative correlation. For this paper, the Pearson's R will be analyzed using the following scale:\
+**R > 0.5:**\
+Strength = Strong | Direction = Positive\
+**0.5 > R > 0.3:**\
+Strength = Moderate | Direction = Positive\
+**0.3 > R > 0.0:**\
+Strength = Weak | Direction = Positive\
+**R = 0:**\
+Strength = None | Direction = None\
+**0 > R > -0.3:**\
+Strength = Weak | Direction = Negative\
+**-0.3 > R > -0.5:**\
+Strength = Moderate | Direction = Negative\
+**-0.5 > R:**\
+Strength = Strong | Direction = Negative
+
+|   In addition to Pearson's R, we are also going to use a linear regression model to determine whether correlations established by Pearson's R is statistically significant. For the purpose of this paper, a p-value < 0.05 will classify a correlation as statistically significant while a p-value > 0.05 will classify a correlation as not statistically significant. If correlations are statistically significant, the linear regression will inform us how much inflation rate will increase per 1% increase of the BMI. A Pearson's R >= 0.3 and a p-value < 0.05 will lead to the rejection of the null hypothesis and acceptance of the alternative hypothesis.
+
 # Results
 ## Pearson's R
+Canada
 ```{r}
 # Calculate Pearson's r for Canadian Big Mac Index and Inflation Rate
 cor(canada_data[-1,]$big_mac_index, canada_data[-1,]$inflation_rate)
 ```
-
+United Kingdom
 ```{r}
 # Calculate Pearson's r for British Big Mac Index and Inflation Rate
 cor(britain_data[-1,]$big_mac_index, britain_data[-1,]$inflation_rate)
 ```
-
+Japan
 ```{r}
 # Calculate Pearson's r for Japanese Big Mac Index and Inflation Rate
 cor(japan_data[-1,]$big_mac_index, japan_data[-1,]$inflation_rate)
 ```
-
+Combined
 ```{r}
 # Calculate Pearson's r for Combined Big Mac Index and Inflation Rate
 cor(combined_data[-c(1,24,47),]$big_mac_index, combined_data[-c(1,24,47),]$inflation_rate)
 ```
-
+Linear regression for Canada
 ```{r}
 #Conduct simple linear regression for Canada
 # The variable before the ~ is always the dependent variable (outcome)
@@ -272,7 +298,7 @@ canada_lin_reg <- lm(inflation_rate ~ big_mac_index, data = canada_data)
 # Display the stored results
 summary(canada_lin_reg)
 ```
-
+Linear regression for United Kingdom
 ```{r}
 #Conduct simple linear regression for Britain
 # The variable before the ~ is always the dependent variable (outcome)
@@ -283,7 +309,7 @@ britain_lin_reg <- lm(inflation_rate ~ big_mac_index, data = britain_data)
 # Display the stored results
 summary(britain_lin_reg)
 ```
-
+Linear regression for Japan
 ```{r}
 #Conduct simple linear regression for Japan
 # The variable before the ~ is always the dependent variable (outcome)
@@ -294,7 +320,7 @@ japan_lin_reg <- lm(inflation_rate ~ big_mac_index, data = japan_data)
 # Display the stored results
 summary(japan_lin_reg)
 ```
-
+Linear regression for all countries combined
 ```{r}
 #Conduct simple linear regression for all countries combined
 # The variable before the ~ is always the dependent variable (outcome)
@@ -307,11 +333,26 @@ summary(combined_lin_reg)
 ```
 
 ## Canada
+With a Pearson's R of approximately 0.142 between the Big Mac Index and the inflation rate, there is a weak positive correlation between the BMI and inflation rate in Canada. This weak correlation suggests that in Canada, the BMI is not a good predictor of the inflation rate. This is further reinforced by the results of the linear regression calculations which reveal a p-value of approximate 0.53 suggesting that the relationship between the BMI and inflation rate is not statistically significant in Canada.
 
 ## United Kingdom
+Data from the United Kingdom has similar results, however there is a stronger correlation in the U.K. than Canada. The Pearson's R value for the U.K. is approximately 0.341 which shows a moderate positive correlation between the BMI and inflation rate in Canada. However, the p-value of approximately 0.119 suggests that this correlation is not statistically significant.
 
 ## Japan
+The calculations for Japan once again show a weak (albeit positive) correlation between the BMI and inflation rate. The Pearson's R for Japan is approximately 0.268 while the p-value from the linear regression model is 0.227. 
+
+## Combined data
+Combining the data for all 3 countries, however, leads to different results. The Pearson's R for the combined data is approximately 0.295 which is close to being moderately positively correlated while the p-value from the linear regression model is 0.0161 which suggests that the correlation is statistically significant.
 
 # Discussion
+The results from all three countries' Pearson's R and linear regression models show that the alternative hypothesis should be rejected and the null hypothesis is accepted; the Big Mac Index is **not** an accurate predictor of the inflation rate when applied within a single country's economy and currency. Although there is a weak to moderate positive correlation between the BMI and inflation rate within the three countries, the low p-values suggests that the correlation is not statistically significant enough to reject the null hypothesis. The presence of a correlation, however, also suggests that there are confounding variables that may contribute to the inflation rate and that although the BMI alone is not enough to predict the inflation rate, broadening the study to include other variables may lead to statistically significant results. The higher correlation observed by the United Kingdom compared to the Japan and Canada may be due to the difference in price weights and number of items in the consumer baskets of the respective countries. Since Big Macs are included in the CPI-basket used for measuring inflation, there will undoubtedly be some level of correlation between the BMI and inflation. The more items are included in the CPI basket, and the less weight is put on the category Big Macs are included in for each country, the less strength the correlation will have. 
 
+|   The linear model for the combined data shows that for every 1% increase in the BMI, inflation goes up by approximately 0.095%. The contrasting results from evaluating the BMI in a localized context versus the international context is an interesting result that may be explained as an example of Simpson's Paradox. Simpson's Paradox describes the phenomenon where a correlation between two variables can emerge or disappear when the population is divided into subpopulations. In this case, the correlation between the BMI and inflation rate emerges when the subpopulations of BMI and inflation data between different countries are combined. A possible interpretation of this result is that although the BMI is not a good predictor of inflation in a localized context, the collective increase in the rise of Big Mac prices across the globe is a good predictor of a worldwide decrease in purchasing power across all economies (extrapolated from our 3 economies from North America, Europe, and Asia). Another possibility for this result is the conversion of local prices to USD before modelling. Since prices from Canada, the United Kingdom, and Japan were converted to USD in the combined dataset, the correlation calculations may reflect a relationship between the strength of each given country's currency against the U.S. dollar and inflation rather than the BMI and inflation. Since inflation and the value of currency are strongly correlated, as described by popular economic theory^[@Nber:2016], the conversion of local prices to another currency leads to distortion in the correlation and significance measures.
 
+|   The statistical insignificance between the BMI and inflation rate also has implications on the effectiveness of the BMI as a measure for exchange rates between countries. Specifically, it implies that the BMI is not a useful metric for exchange rate speculators and currency investors to determine the inflation trajectory of a currency in the short-term. Currently, the BMI is used to determine (roughly) whether the exchange rate between two currencies reflects the real purchasing power in their respective economies. Changes in the price of the Big Macs in one economy may lead investors to believe that the total purchasing power of a currency is going to change. However, our study has shown that changes in the price of Big Macs is not indicative of a future change in the purchasing power of a currency.
+
+# Conclusion
+Through the use of Pearson’s R, our analysis indicates that the BMI is not a reliable predictor of inflation for Canada, Japan, and the United Kingdom, individually. For each country, our results showed that correlation between the BMI and inflation rates are fairly weak, with none being statistically significant. However, when conducting analysis for all three countries combined, the results yielded a statistically significant and slightly positive correlation. Therefore, it is possible that the BMI is a good predictor of inflation on a global scale. This is an area of research we wish to research moving forward. Our current analysis focuses on only three countries, but perhaps by including more countries we would be able to gain a better understanding on the relationship between the BMI and inflation on a global scale. Additionally, it is important to note that the countries chosen for this analysis have the highest Gross Domestic Products (GDP) in the world, which is not representative of the varying economic states of other countries. Therefore, another research venture of ours would be to explore the correlation of the BMI and inflation rates in countries with lower GDPs and then compare these results with those of countries with higher GDPs.
+
+\newpage
+# References
